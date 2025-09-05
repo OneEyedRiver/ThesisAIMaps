@@ -38,9 +38,21 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                           d="M12 4v16m8-8H4" />
                 </svg>
-                Upload
+                Image
             </label>
             <input type="file" id="imageInput" name="image" class="hidden" required>
+        </form>
+         <form id="uploadForm1" action="/api/describe-audio" method="POST" enctype="multipart/form-data">
+            @csrf
+            <label for="audioInput" 
+                   class="cursor-pointer flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-4 py-3 rounded-lg font-medium shadow-md transition">
+                <svg class="w-5 h-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M12 4v16m8-8H4" />
+                </svg>
+                Voice
+            </label>
+            <input type="file" name="audio" id="audioInput" accept="audio/*" class="hidden"  required>
         </form>
     </div>
 </div>
@@ -50,10 +62,6 @@
  <!-- Map -->
  <div class="flex justify-center items-center m-10">
     <div id="map" style="height: 500px; width: 75%;" class="rounded-lg my-4"></div>
-
-    <!-- Leaflet scripts -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 
 </div>
@@ -403,6 +411,53 @@ document.getElementById('imageInput').addEventListener('change', function() {
 });
 
         
+
+
+
+//Audio
+document.getElementById('audioInput').addEventListener('change', async function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('audio', file);
+    formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+    try {
+        const response = await fetch('/api/describe-audio', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        // If GPT responded with choices (standard OpenAI API response)
+        let dishName = "Not recognized";
+        if (data.choices && data.choices[0].message) {
+            try {
+                const parsed = JSON.parse(data.choices[0].message.content);
+                dishName = parsed.dish || "Not recognized";
+            } catch (err) {
+                console.error("JSON parse failed:", err, data);
+            }
+        }
+
+        document.getElementById('search').value = dishName;
+        console.log(dishName)
+    } catch (error) {
+        console.error("Upload failed:", error);
+        document.getElementById('dishName').textContent = "Error recognizing audio";
+    }
+});
+
+
+
+
+
+
+
+
+
     </script>
 
     </x-userLayout>

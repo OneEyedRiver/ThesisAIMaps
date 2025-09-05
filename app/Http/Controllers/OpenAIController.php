@@ -167,4 +167,101 @@ public function describeDishImage(Request $request)
     return response()->json($parsed);
 }
 
+
+
+
+public function describeUploadedAudio(Request $request)
+{
+    if (!$request->hasFile('audio')) {
+        return response()->json(['error' => 'No audio uploaded'], 400);
+    }
+
+    $audioPath = $request->file('audio')->getRealPath();
+
+    // Step 1: Transcribe audio using Whisper
+    $transcription = Http::withHeaders([
+        'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+    ])->attach(
+        'file', file_get_contents($audioPath), $request->file('audio')->getClientOriginalName()
+    )->post('https://api.openai.com/v1/audio/transcriptions', [
+        'model' => 'whisper-1',
+    ]);
+
+    if (!$transcription->successful()) {
+        return response()->json(['error' => 'Transcription failed', 'details' => $transcription->json()], 500);
+    }
+
+    $recognizedText = $transcription->json()['text'];
+
+    // Step 2: Send transcription to GPT just to get the item name
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+        'Content-Type'  => 'application/json',
+    ])->post('https://api.openai.com/v1/chat/completions', [
+        'model' => 'gpt-4o-mini',
+        'messages' => [
+            [
+                'role' => 'system',
+                'content' => 'You are a chef assistant. Respond ONLY in JSON with the key "dish". "dish" is the name of the dish mentioned in the text.',
+            ],
+            [
+                'role' => 'user',
+                'content' => "Recognized speech: \"$recognizedText\". Extract only the dish name.",
+            ],
+        ],
+    ]);
+
+    return response()->json($response->json());
+}
+
+
+public function describeAudioIngredients(Request $request)
+{
+    if (!$request->hasFile('audio')) {
+        return response()->json(['error' => 'No audio uploaded'], 400);
+    }
+
+    $audioPath = $request->file('audio')->getRealPath();
+
+    // Step 1: Transcribe audio using Whisper
+    $transcription = Http::withHeaders([
+        'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+    ])->attach(
+        'file', file_get_contents($audioPath), $request->file('audio')->getClientOriginalName()
+    )->post('https://api.openai.com/v1/audio/transcriptions', [
+        'model' => 'whisper-1',
+    ]);
+
+    if (!$transcription->successful()) {
+        return response()->json(['error' => 'Transcription failed', 'details' => $transcription->json()], 500);
+    }
+
+    $recognizedText = $transcription->json()['text'];
+
+    // Step 2: Ask GPT for dish + ingredients
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+        'Content-Type'  => 'application/json',
+    ])->post('https://api.openai.com/v1/chat/completions', [
+        'model' => 'gpt-4o-mini',
+        'messages' => [
+            [
+                'role' => 'system',
+                'content' => 'You are a chef assistant. Respond ONLY in JSON with keys "dish" and "ingredients". 
+                              - "dish" is the name of the dish mentioned in the text. 
+                              - "ingredients" is an array of the main ingredients usually used in this dish.',
+            ],
+            [
+                'role' => 'user',
+                'content' => "Recognized speech: \"$recognizedText\". Extract the dish name and its ingredients.",
+            ],
+        ],
+    ]);
+
+    return response()->json($response->json());
+}
+
+
+
+
 }

@@ -283,8 +283,6 @@ resetImage.value="";
 </script>
 
 
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 <style>
   #map { height: 400px; margin-top: 20px; }
 </style>
@@ -294,8 +292,7 @@ resetImage.value="";
 <!-- Add the map after the form fields -->
 <div id="map"></div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script>
     // Initialize map (centered in Manila as default)
     var map = L.map('map').setView([14.4655992, 121.1946487], 13);

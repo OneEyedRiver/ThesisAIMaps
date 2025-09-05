@@ -14,7 +14,9 @@
              @vite('resources/js/app.js')
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-
+<!-- Leaflet CSS & JS (local) -->
+<link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
+<script src="{{ asset('leaflet/leaflet.js') }}"></script>
 </head>
 <body class=" bg-gray-100">
 
