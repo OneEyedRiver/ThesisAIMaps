@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\UserController;
@@ -53,16 +54,24 @@ Route::middleware(['auth', 'is_user'])
         
     })
 
-       ->controller(StoreController::class)
+     ->controller(StoreController::class)
     ->group(function () {
        
          Route::get('/setUp', 'setUp')->name('store.setUp');
          Route::post('/saveStore', 'saveStore')->name('store.saveStore');
         
     })
-    
-    
-    ;
+      ->controller(CartController::class)
+    ->group(function () {
+       
+         Route::post('/cart/add', 'store')->name('cart.add');
+         Route::get('/userCart', 'userCart')->name('cart.userCart');
+         Route::get('/userCart', 'userCart')->name('cart.userCart');
+         Route::post('/cart/update/{id}', 'update')->name('cart.update');
+         Route::delete('/cart/delete/{id}', 'destroy')->name('cart.delete');
+
+        
+    });
 
 
 Route::middleware(['auth', 'is_admin'])

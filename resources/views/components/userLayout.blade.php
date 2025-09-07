@@ -17,6 +17,17 @@
 <!-- Leaflet CSS & JS (local) -->
 <link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />
 <script src="{{ asset('leaflet/leaflet.js') }}"></script>
+
+
+
+
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+
+
+
+
 </head>
 <body class=" bg-gray-100">
 
@@ -39,6 +50,10 @@
 <a href="{{ route('user.fastSearchGroup') }} " class="group inline-block">
     <img src="{{ asset('images/fastSearch.png') }}" alt="Clickable Image" class="group-hover:hidden w-12 h-12 transition">
     <img src="{{ asset('images/fastSearch-hover.png') }}" alt="Clickable Image" class="hidden group-hover:inline w-13 h-13 transition">
+</a>
+<a href="{{ route('cart.userCart') }} " class="group inline-block">
+    <img src="{{ asset('images/cart.png') }}" alt="Clickable Image" class="group-hover:hidden w-12 h-12 transition">
+    <img src="{{ asset('images/cart-hover.png') }}" alt="Clickable Image" class="hidden group-hover:inline w-13 h-13 transition">
 </a>
 <a href="{{ route('user.sellView') }} " class="group inline-block">
     <img src="{{ asset('images/add-icon.png') }}" alt="Clickable Image" class="group-hover:hidden w-12 h-12 transition">

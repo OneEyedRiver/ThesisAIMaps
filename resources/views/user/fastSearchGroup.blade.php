@@ -100,24 +100,33 @@
 </div>
 
 
-<div class="overflow-x-auto  flex justify-center">
+<div class="overflow-x-auto   flex justify-center">
     <table class="w-[full] text-lg text-left text-gray-600 border-collapse ">
-        <thead class="bg-gray-100 text-gray-800 text-sm uppercase tracking-wide">
+         <thead class="bg-gray-100 text-gray-800 text-sm uppercase tracking-wide">
             <tr>
                 <th scope="col" class="px-6 py-3">Store Name</th>
                 <th scope="col" class="px-6 py-3">Address</th>
+                <th scope="col" class="px-6 py-3">Price</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200 ">
+        <tbody class="divide-y divide-gray-200">
             @foreach ($stores as $store)
-                <tr class="hover:bg-gray-50 transition cursor-pointer"  data-lat="{{ $store->latitude }}"  data-lng="{{ $store->longitude }}">
-                    <td class="px-6 py-4 font-medium text-gray-900">{{ $store->store_name }}</td>
-                    <td class="px-6 py-4">{{ $store->store_address }}</td>
-                </tr>
+                @foreach ($store->matched_products as $item)
+                    <tr class="hover:bg-gray-50 transition cursor-pointer"  
+                        data-lat="{{ $store->latitude }}"  
+                        data-lng="{{ $store->longitude }}">
+                        
+                        <td class="px-6 py-4 font-medium text-gray-900">{{ $store->store_name }}</td>
+                        <td class="px-6 py-4">{{ $store->store_address }}</td>
+                        <td class="px-6 py-4">₱{{ $item->product_price }}</td>
+                    </tr>
+                @endforeach
             @endforeach
         </tbody>
     </table>
 </div>
+
+
 
 
 
@@ -366,6 +375,48 @@ if (store.matched_products && store.matched_products.length > 0) {
 
         // Add this product card to list
         productList.appendChild(li);
+
+
+
+
+              // Add to Cart button
+var addBtn = document.createElement("button");
+addBtn.textContent = "Add to Cart";
+addBtn.classList.add("bg-blue-600", "text-white", "px-4", "py-2", "rounded", "mt-2");
+
+// On click, send product + store info
+addBtn.onclick = function () {
+    fetch("/cart/add", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+        },
+        body: JSON.stringify({
+            product_id: product.id,
+            store_id: store.id,
+            product_name: product.product_name,
+            product_price: product.product_price,
+            product_unit: product.product_unit,
+            product_description: product.product_description,
+            latitude: store.latitude,
+            longitude: store.longitude,
+            quantity: 1
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert(product.product_name + " added to cart!");
+        }
+    });
+};
+
+li.appendChild(addBtn);
+
+
+
+
     });
                 } else {
                     productList.innerHTML = "<li>No matching product found</li>";
