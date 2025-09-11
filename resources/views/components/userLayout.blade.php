@@ -11,8 +11,7 @@
     {{-- <link rel="stylesheet" href="{{ secure_asset('build/' . $manifest['resources/css/app.css']['file']) }}">
     <script type="module" src="{{ secure_asset('build/' . $manifest['resources/js/app.js']['file']) }}"></script> --}}
     @vite('resources/css/app.css')
-             @vite('resources/js/app.js')
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    @vite('resources/js/app.js')
 
 <!-- Leaflet CSS & JS (local) -->
 <link rel="stylesheet" href="{{ asset('leaflet/leaflet.css') }}" />

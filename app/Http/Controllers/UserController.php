@@ -225,5 +225,6 @@ public function fastSearchGroup(Request $request)
    // dd($stores);
 }
 
+
 }
 
